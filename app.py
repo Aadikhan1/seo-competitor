@@ -27,8 +27,8 @@ if uploaded_file is not None:
                 min_val = float(df[col].min())
                 max_val = float(df[col].max())
                 if min_val == max_val:
-                    min_val -= 1 if min_val > 0 else -1
-                    max_val += 1 if max_val >= 0 else -1
+                    min_val = 0.0
+                    max_val = 1.0 if min_val >= 0 else -1.0
                 filters[col] = st.slider(f"{col} range",
                                          min_value=min_val,
                                          max_value=max_val,
