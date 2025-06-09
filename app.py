@@ -27,19 +27,21 @@ if uploaded_file is not None:
                 min_val = float(df[col].min())
                 max_val = float(df[col].max())
 
-                # Skip sliders where min == max (constant column)
+                # ⚠️ Streamlit slider must have min < max
                 if min_val == max_val:
-                    st.info(f"ℹ️ Skipping numeric filter for **{col}** (constant value: {min_val})")
+                    st.info(f"ℹ️ Skipping numeric filter for '{col}' (constant value: {min_val})")
                     continue
 
-                filters[col] = st.slider(f"{col} range",
-                                         min_value=min_val,
-                                         max_value=max_val,
-                                         value=(min_val, max_val))
+                filters[col] = st.slider(
+                    f"{col} range",
+                    min_value=min_val,
+                    max_value=max_val,
+                    value=(min_val, max_val)
+                )
             else:
                 unique_vals = df[col].dropna().unique().tolist()
                 if len(unique_vals) == 0:
-                    st.warning(f"⚠️ Column '{col}' has no valid values to filter.")
+                    st.warning(f"⚠️ Column '{col}' has no valid values.")
                     continue
                 filters[col] = st.multiselect(f"Select {col}", unique_vals, default=unique_vals)
 
