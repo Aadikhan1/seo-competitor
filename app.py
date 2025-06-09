@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 
-st.set_page_config(page_title="SEO Backlink Filter Tool", layout="wide")
+st.set_page_config(page_title="SEO Backlink Filter Tool - NEW", layout="wide")
 st.title("🔗 SEO Backlink Filter Tool")
 
 uploaded_file = st.file_uploader("📤 Upload Excel file with backlinks", type=["xlsx"])
