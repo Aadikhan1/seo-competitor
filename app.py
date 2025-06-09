@@ -26,15 +26,21 @@ if uploaded_file is not None:
             if pd.api.types.is_numeric_dtype(df[col]):
                 min_val = float(df[col].min())
                 max_val = float(df[col].max())
+
+                # Skip sliders where min == max (constant column)
                 if min_val == max_val:
-                    min_val = 0.0
-                    max_val = 1.0 if min_val >= 0 else -1.0
+                    st.info(f"ℹ️ Skipping numeric filter for **{col}** (constant value: {min_val})")
+                    continue
+
                 filters[col] = st.slider(f"{col} range",
                                          min_value=min_val,
                                          max_value=max_val,
                                          value=(min_val, max_val))
             else:
                 unique_vals = df[col].dropna().unique().tolist()
+                if len(unique_vals) == 0:
+                    st.warning(f"⚠️ Column '{col}' has no valid values to filter.")
+                    continue
                 filters[col] = st.multiselect(f"Select {col}", unique_vals, default=unique_vals)
 
         filtered_df = df.copy()
@@ -45,10 +51,11 @@ if uploaded_file is not None:
                 filtered_df = filtered_df[filtered_df[col].isin(val)]
 
         st.markdown("### 🔍 Search within Filtered Results")
-        search_col = st.selectbox("Select column to search", selected_columns)
-        search_term = st.text_input("Enter search term")
-        if search_term:
-            filtered_df = filtered_df[filtered_df[search_col].astype(str).str.contains(search_term, case=False)]
+        if selected_columns:
+            search_col = st.selectbox("Select column to search", selected_columns)
+            search_term = st.text_input("Enter search term")
+            if search_term:
+                filtered_df = filtered_df[filtered_df[search_col].astype(str).str.contains(search_term, case=False)]
 
         st.markdown("### ✅ Filtered Data")
         st.dataframe(filtered_df)
